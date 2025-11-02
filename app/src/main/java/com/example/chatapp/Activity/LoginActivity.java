@@ -19,6 +19,7 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
 import com.example.chatapp.Bean.User;
+import com.example.chatapp.ChatApplication;
 import com.example.chatapp.R;
 import com.hyphenate.EMCallBack;
 import com.hyphenate.chat.EMClient;
@@ -62,10 +63,10 @@ public class LoginActivity extends AppCompatActivity {
                 String username = et_username.getText().toString().trim();
                 String password = et_password.getText().toString().trim();
                 if (inputIsValid(username,password)) {
-                    final User user = new User();
-                    user.setUsername(username);
-                    user.setPassword(password);
-                    user.login(new SaveListener<User>() {
+                    final User userme = new User();
+                    userme.setUsername(username);
+                    userme.setPassword(password);
+                    userme.login(new SaveListener<User>() {
                         @Override
                         public void done(User user, BmobException e) {
                             if (e == null) {
@@ -79,6 +80,7 @@ public class LoginActivity extends AppCompatActivity {
                                                     @Override
                                                     public void run() {
                                                         Toast.makeText(LoginActivity.this, "登录成功", Toast.LENGTH_SHORT).show();
+                                                        ChatApplication.setUser(userme);
                                                         startActivity(new Intent(LoginActivity.this, MainActivity.class));
                                                         finish();
                                                     }

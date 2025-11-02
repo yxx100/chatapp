@@ -51,4 +51,6 @@ dependencies {
     implementation("io.hyphenate:hyphenate-chat:4.17.0")
 //    UIKit 依赖
 //    implementation("io.hyphenate:ease-chat-kit:4.13.0")
+    //Glide依赖
+    implementation("com.github.bumptech.glide:glide:4.15.1")
 }

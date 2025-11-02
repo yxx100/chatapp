@@ -127,7 +127,7 @@ public class RegisterActivity extends AppCompatActivity {
         User user = new User();
         user.setUsername(username);
         user.setPassword(password);
-
+        user.setAvatar("123");
         Log.d(TAG, "正在注册Bmob用户: " + username);
         user.signUp(new SaveListener<User>() {
             @Override
