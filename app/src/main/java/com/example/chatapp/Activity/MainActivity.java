@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.TextView;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -21,6 +22,7 @@ import cn.bmob.v3.listener.SaveListener;
 
 public class MainActivity extends AppCompatActivity {
     private static final String TAG = "MainActivity";
+    private TextView textView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,6 +34,8 @@ public class MainActivity extends AppCompatActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
+        textView=findViewById(R.id.user);
+        textView.setText(String.valueOf(ChatApplication.getUser().getUsername()));
     }
 
     public void logout(View view) {
@@ -52,5 +56,9 @@ public class MainActivity extends AppCompatActivity {
 
     public void tocontact(View view) {
         startActivity(new Intent(MainActivity.this,TestActivity.class));
+    }
+
+    public void tochat(View view) {
+
     }
 }
