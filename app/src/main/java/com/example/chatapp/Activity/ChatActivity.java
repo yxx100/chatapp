@@ -29,6 +29,7 @@ import com.example.chatapp.Bean.User;
 import com.example.chatapp.ChatApplication;
 import com.example.chatapp.R;
 import com.google.android.material.snackbar.Snackbar;
+import com.hyphenate.chat.EMClient;
 import com.hyphenate.chat.EMMessage;
 
 import java.util.ArrayList;
@@ -56,11 +57,11 @@ public class ChatActivity extends AppCompatActivity {
     private RecyclerView recyclerView;
     private List<Chat> chats = new ArrayList<>();
     private List<BmobObject> updateChats = new ArrayList<>();
+    private ChatAdapter chatAdapter;
     private User me;
     private User friend;
     private String friendName;
     private String friendAvatar;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -105,14 +106,20 @@ public class ChatActivity extends AppCompatActivity {
         bmobQuery.findObjects(new FindListener<Chat>() {
             @Override
             public void done(List<Chat> list, BmobException e) {
-                chats.clear();
+                //chats.clear();
                 if (list != null) {
                     for (Chat chat : list) {
                         if (myName.contentEquals(chat.getSender().getUsername()) && friendName.contentEquals(chat.getReceiver().getUsername())) {
                             chats.add(chat);
+                            Log.d(TAG,"我"+myName);
+                            Log.d(TAG,"朋友接收者"+friendName);
+                            Log.d(TAG,"我是发送者的一条消息被添加");
                         }
                         if (myName.contentEquals(chat.getReceiver().getUsername()) && friendName.contentEquals(chat.getSender().getUsername())) {
                             chats.add(chat);
+                            Log.d(TAG,"我"+myName);
+                            Log.d(TAG,"朋友发送者"+friendName);
+                            Log.d(TAG,"我是接收者的一条消息被添加");
 
                             if (!chat.isRead()) {
                                 chat.setRead(true);
@@ -132,7 +139,7 @@ public class ChatActivity extends AppCompatActivity {
                 });
                 Log.d(TAG,"聊天记录排序完成");
                 if (chats.size() != previousSize||previousSize == 0) {
-                    recyclerView.setAdapter(new ChatAdapter(chats));
+                    chatAdapter.updateData(chats);
                     if (chats.size() > 0)
                         recyclerView.scrollToPosition(chats.size() - 1);
                 }
@@ -154,7 +161,6 @@ public class ChatActivity extends AppCompatActivity {
             });
         }
     }
-
     private void setEvent() {
         //返回按钮的点击事件
         imageButtonChatBack.setOnClickListener(new View.OnClickListener() {
@@ -174,7 +180,7 @@ public class ChatActivity extends AppCompatActivity {
                     return;
                 //获取发送时间
                 Long time = System.currentTimeMillis();
-                Chat chat = new Chat(me, friend, content, true, time);
+                Chat chat = new Chat( friend,me, content, true, time);
                 chats.add(chat);
                 Log.d(TAG,"Chats添加一条");
                 //保存到数据库
@@ -183,12 +189,13 @@ public class ChatActivity extends AppCompatActivity {
                     public void done(String s, BmobException e) {
                         if (e == null) {
                             //recyclerView更新数据并滚动到最新位置
-                            recyclerView.getAdapter().notifyItemRangeChanged(chats.size() - 1, 1);
+                            recyclerView.getAdapter().notifyItemInserted(chats.size() - 1);;
                             recyclerView.scrollToPosition(chats.size() - 1);
                             editTextChat.setText("");
                             Log.d(TAG,"聊天记录保存成功");
                             //环信推送
                             EMMessage emMessage = EMMessage.createTextSendMessage(content, friend.getUsername());
+                            EMClient.getInstance().chatManager().sendMessage(emMessage);
                             Log.d(TAG,"推送成功");
                         }
                         if (e != null) {
@@ -225,7 +232,8 @@ public class ChatActivity extends AppCompatActivity {
 
         recyclerView = (RecyclerView) findViewById(R.id.recyclerViewChat);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        recyclerView.setAdapter(new ChatAdapter(friendName, friendAvatar,this));
+        chatAdapter=new ChatAdapter(friendName, friendAvatar,chats,this);
+        recyclerView.setAdapter(chatAdapter);
     }
 
 }

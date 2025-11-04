@@ -14,7 +14,6 @@
         android:layout_height="wrap_content"
         android:background="@drawable/chat_right"
         android:gravity="center"
-        android:inputType="textMultiLine"
         android:maxWidth="300dp"
         android:text="Hello!"
         android:textColor="#141414"

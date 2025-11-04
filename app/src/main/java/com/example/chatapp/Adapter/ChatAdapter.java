@@ -1,6 +1,7 @@
 package com.example.chatapp.Adapter;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,6 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ViewHolder>{
+    private static final String TAG = "ChatAdapter";
 
     private List<Chat> chats = new ArrayList<>();
 
@@ -50,7 +52,10 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ViewHolder>{
     public ChatAdapter(List<Chat> chats) {
         this.chats = chats;
     }
-
+    public void updateData(List<Chat> newChats) {
+        this.chats=newChats;
+        notifyDataSetChanged();
+    }
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -62,6 +67,12 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ViewHolder>{
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         Chat chat = chats.get(position);
+        if (chat==null){
+            Log.d(TAG,"chat为空");
+        }
+        if (holder.textView==null){
+            Log.d(TAG,"textview为空");
+        }
         holder.textView.setText(chat.getContent());
 
         APPUtil util=new APPUtil(context);
@@ -79,6 +90,7 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ViewHolder>{
     @Override
     public int getItemViewType(int position) {
         Chat chat = chats.get(position);
+        Log.d(TAG,"sender:"+chat.getSender().getUsername()+"me:"+me.getUsername());
         if (chat.getSender().getUsername().contentEquals(me.getUsername())) {
             return R.layout.chat_right_item;
         } else {
