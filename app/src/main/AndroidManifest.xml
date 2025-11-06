@@ -38,6 +38,9 @@
         android:theme="@style/Theme.ChatAPP"
         android:usesCleartextTraffic="true">
         <activity
+            android:name=".Activity.TestActivity2"
+            android:exported="false" />
+        <activity
             android:name=".Activity.AddFriendActivity"
             android:exported="false" />
         <activity

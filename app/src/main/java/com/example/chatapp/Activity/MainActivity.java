@@ -58,7 +58,7 @@ public class MainActivity extends AppCompatActivity {
         startActivity(new Intent(MainActivity.this,TestActivity.class));
     }
 
-    public void tochat(View view) {
-
+    public void tomessage(View view) {
+        startActivity(new Intent(MainActivity.this,TestActivity2.class));
     }
 }

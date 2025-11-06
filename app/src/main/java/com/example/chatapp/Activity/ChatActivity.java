@@ -32,6 +32,7 @@ import com.google.android.material.snackbar.Snackbar;
 import com.hyphenate.chat.EMClient;
 import com.hyphenate.chat.EMMessage;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -76,18 +77,18 @@ public class ChatActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        messagereceiever=new BroadcastReceiver() {
+        messagereceiever = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
-                String from=intent.getStringExtra("from");
-                String content=intent.getStringExtra("content");
-                if (from.equals(friendName)){
+                String from = intent.getStringExtra("from");
+                String content = intent.getStringExtra("content");
+                if (from.equals(friendName)) {
                     updateChat();
                 }
             }
         };
         LocalBroadcastManager.getInstance(this)
-                .registerReceiver(messagereceiever,new IntentFilter("NEW_MESSAGE_RECEIEVED"));
+                .registerReceiver(messagereceiever, new IntentFilter("NEW_MESSAGE_RECEIEVED"));
     }
 
     @Override
@@ -96,10 +97,37 @@ public class ChatActivity extends AppCompatActivity {
         LocalBroadcastManager.getInstance(this).unregisterReceiver(messagereceiever);
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        // 彻底清理
+        if (messagereceiever != null) {
+            try {
+                {
+                    LocalBroadcastManager.getInstance(this).unregisterReceiver(messagereceiever);
+                }
+
+                if (recyclerView != null) {
+                    recyclerView.setAdapter(null);
+                }
+
+                if (chats != null) {
+                    chats.clear();
+                }
+
+                if (updateChats != null) {
+                    updateChats.clear();
+                }
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        }
+    }
+
     private void updateChat() {
         int previousSize = chats.size();
         //遍历聊天记录数据库
-        Log.d(TAG,"进入updateChat");
+        Log.d(TAG, "进入updateChat");
         String myName = me.getUsername();
         BmobQuery<Chat> bmobQuery = new BmobQuery<>();
         bmobQuery.include("sender,receiver");
@@ -111,22 +139,22 @@ public class ChatActivity extends AppCompatActivity {
                     for (Chat chat : list) {
                         if (myName.contentEquals(chat.getSender().getUsername()) && friendName.contentEquals(chat.getReceiver().getUsername())) {
                             chats.add(chat);
-                            Log.d(TAG,"我"+myName);
-                            Log.d(TAG,"朋友接收者"+friendName);
-                            Log.d(TAG,"我是发送者的一条消息被添加");
+                            Log.d(TAG, "我" + myName);
+                            Log.d(TAG, "朋友接收者" + friendName);
+                            Log.d(TAG, "我是发送者的一条消息被添加");
                         }
                         if (myName.contentEquals(chat.getReceiver().getUsername()) && friendName.contentEquals(chat.getSender().getUsername())) {
                             chats.add(chat);
-                            Log.d(TAG,"我"+myName);
-                            Log.d(TAG,"朋友发送者"+friendName);
-                            Log.d(TAG,"我是接收者的一条消息被添加");
+                            Log.d(TAG, "我" + myName);
+                            Log.d(TAG, "朋友发送者" + friendName);
+                            Log.d(TAG, "我是接收者的一条消息被添加");
 
                             if (!chat.isRead()) {
                                 chat.setRead(true);
                                 Chat chat1 = new Chat(chat.getSender(), chat.getReceiver(), chat.getContent(), chat.isRead(), chat.getTime());
                                 chat1.setObjectId(chat.getObjectId());
                                 updateChats.add(chat1);
-                                Log.d(TAG,"updateChats新加一条");
+                                Log.d(TAG, "updateChats新加一条");
                             }
                         }
                     }
@@ -137,8 +165,8 @@ public class ChatActivity extends AppCompatActivity {
                         return Long.compare(o1.getTime(), o2.getTime());
                     }
                 });
-                Log.d(TAG,"聊天记录排序完成");
-                if (chats.size() != previousSize||previousSize == 0) {
+                Log.d(TAG, "聊天记录排序完成");
+                if (chats.size() != previousSize || previousSize == 0) {
                     chatAdapter.updateData(chats);
                     if (chats.size() > 0)
                         recyclerView.scrollToPosition(chats.size() - 1);
@@ -148,7 +176,7 @@ public class ChatActivity extends AppCompatActivity {
         });
     }
 
-    private void makeMessageRead(){
+    private void makeMessageRead() {
         //批量更新已读状态
         if (!updateChats.isEmpty()) {
             new BmobBatch().updateBatch(updateChats).doBatch(new QueryListListener<BatchResult>() {
@@ -161,6 +189,7 @@ public class ChatActivity extends AppCompatActivity {
             });
         }
     }
+
     private void setEvent() {
         //返回按钮的点击事件
         imageButtonChatBack.setOnClickListener(new View.OnClickListener() {
@@ -180,23 +209,23 @@ public class ChatActivity extends AppCompatActivity {
                     return;
                 //获取发送时间
                 Long time = System.currentTimeMillis();
-                Chat chat = new Chat( friend,me, content, true, time);
+                Chat chat = new Chat(friend, me, content, true, time);
                 chats.add(chat);
-                Log.d(TAG,"Chats添加一条");
+                Log.d(TAG, "Chats添加一条");
                 //保存到数据库
                 chat.save(new SaveListener<String>() {
                     @Override
                     public void done(String s, BmobException e) {
                         if (e == null) {
                             //recyclerView更新数据并滚动到最新位置
-                            recyclerView.getAdapter().notifyItemInserted(chats.size() - 1);;
+                            recyclerView.getAdapter().notifyItemInserted(chats.size() - 1);
                             recyclerView.scrollToPosition(chats.size() - 1);
                             editTextChat.setText("");
-                            Log.d(TAG,"聊天记录保存成功");
+                            Log.d(TAG, "聊天记录保存成功");
                             //环信推送
                             EMMessage emMessage = EMMessage.createTextSendMessage(content, friend.getUsername());
                             EMClient.getInstance().chatManager().sendMessage(emMessage);
-                            Log.d(TAG,"推送成功");
+                            Log.d(TAG, "推送成功");
                         }
                         if (e != null) {
                             Toast.makeText(ChatActivity.this, "发送失败", Toast.LENGTH_SHORT).show();
@@ -216,13 +245,33 @@ public class ChatActivity extends AppCompatActivity {
 
     private void initView() {
         me = ChatApplication.getUser();
-        Log.d(TAG,"me"+me.getUsername());
-        Bundle bundle = getIntent().getExtras();
-        friend = (User) bundle.getSerializable("friend");
+        Log.d(TAG, "me" + me.getUsername());
+        // 获取传递过来的 Intent
+        Intent intent = getIntent();
+//        if (intent.hasExtra("friend")) {
+//            // 获取序列化的 User 对象
+//            Serializable serializable = intent.getSerializableExtra("friend");
+//            if (serializable instanceof User) {
+//                friend = (User) serializable;
+//                Log.d(TAG, "通过 friend 对象获取数据");
+//            }
+//        }
+//        // 情况：没有传递任何数据（错误处理）
+//        else {
+//            Log.e(TAG, "错误：没有传递任何好友数据");
+//            Toast.makeText(this, "无法获取聊天对象信息", Toast.LENGTH_SHORT).show();
+//            finish(); // 关闭当前 Activity
+//            return;
+//        }
+        friend=(User)intent.getSerializableExtra("friend");
+        if (friend!=null){
         friendName = friend.getUsername();
-
         friendAvatar = friend.getAvatar();
-        Log.d(TAG,"friendname:"+friendName+"avatar:"+friendAvatar);
+        Log.d(TAG, "friendname:" + friendName + "avatar:" + friendAvatar);
+        }else {
+            Log.d(TAG,"传递的friend为空");
+        }
+
         textViewChatUser = (TextView) findViewById(R.id.textViewChatUser);
         editTextChat = (EditText) findViewById(R.id.editTextChat);
         imageButtonChatBack = (ImageButton) findViewById(R.id.imageButtonChatBack);
@@ -232,7 +281,7 @@ public class ChatActivity extends AppCompatActivity {
 
         recyclerView = (RecyclerView) findViewById(R.id.recyclerViewChat);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        chatAdapter=new ChatAdapter(friendName, friendAvatar,chats,this);
+        chatAdapter = new ChatAdapter(friendName, friendAvatar, chats, this);
         recyclerView.setAdapter(chatAdapter);
     }
 

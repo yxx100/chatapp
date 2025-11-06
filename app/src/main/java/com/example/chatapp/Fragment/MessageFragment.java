@@ -26,7 +26,7 @@ import cn.bmob.v3.exception.BmobException;
 import cn.bmob.v3.listener.FindListener;
 
 public class MessageFragment extends Fragment {
-
+    private static final String TAG = "MessageFragment";
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
 
@@ -38,6 +38,7 @@ public class MessageFragment extends Fragment {
     private List<Chat> chats = new ArrayList<>();
     private List<User> users;
     private List<Message> messages = new ArrayList<>();
+    private MessageAdapter messageAdapter;
 
     public MessageFragment() {
         // Required empty public constructor
@@ -75,7 +76,7 @@ public class MessageFragment extends Fragment {
     }
 
     private void updateData() {
-
+        Log.d(TAG,"开始更新数据");
         BmobQuery<User> bmobQuery = new BmobQuery<>();
         bmobQuery.findObjects(new FindListener<User>() {
             @Override
@@ -87,7 +88,9 @@ public class MessageFragment extends Fragment {
     }
     private void updateMessage() {
         //遍历消息列表数据库
+        Log.d(TAG,"进入updateMessage");
         BmobQuery<Chat> bmobQuery = new BmobQuery<>();
+        bmobQuery.include("sender,receiver");
         bmobQuery.findObjects(new FindListener<Chat>() {
             @Override
             public void done(List<Chat> list, BmobException e) {
@@ -95,17 +98,16 @@ public class MessageFragment extends Fragment {
                 List<Message> previousMessages = new ArrayList<>(messages);
                 messages.clear();
                 Log.d("MessageFragment", String.valueOf(list == null));
-                if (e != null) {
-                    e.printStackTrace();
-                }
+
                 if (list != null) {
                     //开始遍历消息列表，分两种情况
                     for (Chat chat : list) {
                         processChatRecord(chat);
                     }
                 }
-                if (!compareLists(previousMessages, messages))
-                    recyclerView.setAdapter(new MessageAdapter());
+                if (!compareLists(previousMessages, messages)||previousMessages.isEmpty())
+                { recyclerView.getAdapter().notifyDataSetChanged();
+                Log.d(TAG,"recycle更新");}
             }
         });
     }
@@ -126,12 +128,14 @@ public class MessageFragment extends Fragment {
 
     // 处理单条聊天记录
     private void processChatRecord(Chat chat){
+        Log.d(TAG,"进入processChatRecord");
         boolean find = false;
         //第一种我是发最后一条消息的人
         if (chat.getSender().getUsername().contentEquals(me.getUsername())) {
             //遍历所有消息
             for (Message message : messages) {
                 if (message.getTitle().contentEquals(chat.getReceiver().getUsername())) {
+                    //时间大的内容会覆盖掉旧内容
                     if (chat.getTime() > message.getTime())
                         message.setContent(chat.getContent());
                     find = true;
@@ -140,7 +144,8 @@ public class MessageFragment extends Fragment {
             }
             //如果消息列表里没有就添加上
             if (!find)
-                messages.add(new Message(chat.getReceiver().getUsername(), chat.getContent(), 0, chat.getTime(), chat.getReceiver().getAvatar()));
+            {  messages.add(new Message(chat.getReceiver().getUsername(), chat.getContent(), 0, chat.getTime(), chat.getReceiver().getAvatar()));
+            Log.d(TAG,"添加了一条我是发送者");}
         } else if (chat.getReceiver().getUsername().contentEquals(me.getUsername())) {
             //第二种情况我是接收者
             for (Message message : messages) {
@@ -148,6 +153,7 @@ public class MessageFragment extends Fragment {
                 if (message.getTitle().contentEquals(chat.getSender().getUsername())) {
                     if (!chat.isRead()) {
                         message.increasePrompt();
+                        //未读消息和当前消息列表的第零个交换，即置顶消息
                         Collections.swap(messages, messages.indexOf(message), 0);
                     }
                     if (chat.getTime() > message.getTime())
@@ -157,6 +163,7 @@ public class MessageFragment extends Fragment {
                 }
             }
             if (!find) {
+                Log.d(TAG,"添加了一条我是接收者");
                 if (chat.isRead())
                     messages.add(new Message(chat.getSender().getUsername(), chat.getContent(), 0, chat.getTime(), chat.getSender().getAvatar()));
                 else {
@@ -170,7 +177,7 @@ public class MessageFragment extends Fragment {
         me = ChatApplication.getUser();
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
         recyclerView.setLayoutManager(layoutManager);
-        MessageAdapter messageAdapter = new MessageAdapter();
+        messageAdapter = new MessageAdapter(messages,getContext());
         recyclerView.setAdapter(messageAdapter);
     }
 }
