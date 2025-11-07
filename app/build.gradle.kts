@@ -1,5 +1,6 @@
 plugins {
     alias(libs.plugins.android.application)
+    alias(libs.plugins.kotlin.android)
 }
 
 android {
@@ -53,4 +54,8 @@ dependencies {
 //    implementation("io.hyphenate:ease-chat-kit:4.13.0")
     //Glide依赖
     implementation("com.github.bumptech.glide:glide:4.15.1")
+//kotlin
+    implementation("org.jetbrains.kotlin:kotlin-stdlib:2.0.21")
+    //callkit依赖
+    implementation("io.hyphenate:chat-call-kit:4.16.0")
 }

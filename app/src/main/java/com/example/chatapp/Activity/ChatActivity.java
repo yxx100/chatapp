@@ -11,6 +11,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -29,6 +30,8 @@ import com.example.chatapp.Bean.User;
 import com.example.chatapp.ChatApplication;
 import com.example.chatapp.R;
 import com.google.android.material.snackbar.Snackbar;
+import com.hyphenate.callkit.CallKitClient;
+import com.hyphenate.callkit.bean.CallType;
 import com.hyphenate.chat.EMClient;
 import com.hyphenate.chat.EMMessage;
 
@@ -63,6 +66,10 @@ public class ChatActivity extends AppCompatActivity {
     private User friend;
     private String friendName;
     private String friendAvatar;
+    private LinearLayout plus;
+    private Button yuyin;
+    private Button shipin;
+    private boolean isVisible=false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -238,9 +245,50 @@ public class ChatActivity extends AppCompatActivity {
         imageViewmore.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(ChatActivity.this, "更多还在开发中", Toast.LENGTH_SHORT).show();
+                if (!isVisible){
+                plus.setVisibility(View.VISIBLE);
+                isVisible=true;}
+                else {
+                   plus.setVisibility(View.GONE);
+                   isVisible=false;
+                }
+
             }
         });
+        //语音通话点击
+        yuyin.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(ChatActivity.this, "点击了语音通话", Toast.LENGTH_SHORT).show();
+                startVoiceCall();
+            }
+        });
+        //视频通话点击
+        shipin.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(ChatActivity.this, "点击了视频通话", Toast.LENGTH_SHORT).show();
+                startVideoCall();
+            }
+        });
+    }
+
+    private void startVoiceCall() {
+        String targetUserId="";
+        CallKitClient.INSTANCE.startSingleCall(
+                CallType.SINGLE_VOICE_CALL,
+                targetUserId,
+                null // 可传 null
+        );
+    }
+
+    private void startVideoCall() {
+        String targetUserId="";
+        CallKitClient.INSTANCE.startSingleCall(
+                CallType.SINGLE_VIDEO_CALL,
+                targetUserId,
+                null // 可传 null
+        );
     }
 
     private void initView() {
@@ -271,12 +319,14 @@ public class ChatActivity extends AppCompatActivity {
         }else {
             Log.d(TAG,"传递的friend为空");
         }
-
         textViewChatUser = (TextView) findViewById(R.id.textViewChatUser);
         editTextChat = (EditText) findViewById(R.id.editTextChat);
         imageButtonChatBack = (ImageButton) findViewById(R.id.imageButtonChatBack);
         buttonSend = (Button) findViewById(R.id.buttonSend);
         imageViewmore = (ImageView) findViewById(R.id.imageViewmore);
+        plus=(LinearLayout) findViewById(R.id.plus);
+        yuyin=(Button)findViewById(R.id.yuyin);
+        shipin=(Button)findViewById(R.id.shipin);
         textViewChatUser.setText(friendName);
 
         recyclerView = (RecyclerView) findViewById(R.id.recyclerViewChat);

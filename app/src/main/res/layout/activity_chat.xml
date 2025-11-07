@@ -87,5 +87,28 @@
 
 
     </LinearLayout>
+    <LinearLayout
+        android:id="@+id/plus"
+        android:layout_width="match_parent"
+        android:layout_height="150dp"
+        android:visibility="gone">
+        <Button
+            android:id="@+id/yuyin"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:text="语音通话"/>
+        <Button
+            android:id="@+id/shipin"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="15dp"
+            android:text="视频通话"/>
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="15dp"
+            android:text="更多功能还在开发"/>
+    </LinearLayout>
 
 </LinearLayout>
