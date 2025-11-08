@@ -17,9 +17,6 @@ import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -35,7 +32,6 @@ import com.hyphenate.callkit.bean.CallType;
 import com.hyphenate.chat.EMClient;
 import com.hyphenate.chat.EMMessage;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -70,6 +66,7 @@ public class ChatActivity extends AppCompatActivity {
     private Button yuyin;
     private Button shipin;
     private boolean isVisible=false;
+    private String targetUserId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -274,7 +271,6 @@ public class ChatActivity extends AppCompatActivity {
     }
 
     private void startVoiceCall() {
-        String targetUserId="";
         CallKitClient.INSTANCE.startSingleCall(
                 CallType.SINGLE_VOICE_CALL,
                 targetUserId,
@@ -283,7 +279,6 @@ public class ChatActivity extends AppCompatActivity {
     }
 
     private void startVideoCall() {
-        String targetUserId="";
         CallKitClient.INSTANCE.startSingleCall(
                 CallType.SINGLE_VIDEO_CALL,
                 targetUserId,
@@ -296,21 +291,6 @@ public class ChatActivity extends AppCompatActivity {
         Log.d(TAG, "me" + me.getUsername());
         // 获取传递过来的 Intent
         Intent intent = getIntent();
-//        if (intent.hasExtra("friend")) {
-//            // 获取序列化的 User 对象
-//            Serializable serializable = intent.getSerializableExtra("friend");
-//            if (serializable instanceof User) {
-//                friend = (User) serializable;
-//                Log.d(TAG, "通过 friend 对象获取数据");
-//            }
-//        }
-//        // 情况：没有传递任何数据（错误处理）
-//        else {
-//            Log.e(TAG, "错误：没有传递任何好友数据");
-//            Toast.makeText(this, "无法获取聊天对象信息", Toast.LENGTH_SHORT).show();
-//            finish(); // 关闭当前 Activity
-//            return;
-//        }
         friend=(User)intent.getSerializableExtra("friend");
         if (friend!=null){
         friendName = friend.getUsername();
@@ -319,6 +299,7 @@ public class ChatActivity extends AppCompatActivity {
         }else {
             Log.d(TAG,"传递的friend为空");
         }
+        targetUserId=friendName;
         textViewChatUser = (TextView) findViewById(R.id.textViewChatUser);
         editTextChat = (EditText) findViewById(R.id.editTextChat);
         imageButtonChatBack = (ImageButton) findViewById(R.id.imageButtonChatBack);

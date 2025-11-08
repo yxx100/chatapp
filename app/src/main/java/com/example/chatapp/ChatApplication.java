@@ -2,6 +2,9 @@ package com.example.chatapp;
 
 import android.app.Application;
 import android.content.Intent;
+import android.os.Handler;
+import android.os.Looper;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -26,12 +29,14 @@ import java.util.List;
 
 import cn.bmob.v3.Bmob;
 import cn.bmob.v3.BmobUser;
+import cn.bmob.v3.ai.BmobAI;
 import cn.bmob.v3.ai.ChatClient;
 import io.agora.rtc2.RtcEngine;
 
 public class ChatApplication extends Application {
     private static ChatApplication instance;
     private static User user;
+    private static BmobAI bmobAI;
     @Override
     public void onCreate() {
         super.onCreate();
@@ -43,6 +48,7 @@ public class ChatApplication extends Application {
         CallKitConfig config=new CallKitConfig();
         CallKitClient.INSTANCE.init(this,config);
         user= BmobUser.getCurrentUser(User.class);
+        bmobAI=new BmobAI();
         initHuanXinListener();
     }
 
@@ -61,6 +67,7 @@ public class ChatApplication extends Application {
     public static void setUser(User user) {
         ChatApplication.user = user;
     }
+
     private void initHuanXinListener() {
         //环信实时接收
         EMClient.getInstance().chatManager().addMessageListener(new EMMessageListener() {
@@ -79,17 +86,50 @@ public class ChatApplication extends Application {
         CallKitClient.INSTANCE.setCallKitListener(new CallKitListener() {
             @Override
             public void onEndCallWithReason(@NonNull CallEndReason callEndReason, @Nullable CallInfo callInfo) {
+                switch (callEndReason) {
+                    case CallEndReasonHangup:
+                        showToast("通话已挂断");
+                        break;
 
+                    case CallEndReasonCancel:
+                        showToast("通话已取消");
+                        break;
+
+                    case CallEndReasonRemoteRefuse:
+                        showToast("对方拒绝通话");
+                        break;
+
+                    case CallEndReasonRemoteNoResponse:
+                        showToast("对方无响应");
+                        break;
+
+                    case CallEndReasonBusy:
+                        showToast("对方忙线中");
+                        break;
+
+                    default:
+                        // 处理未知原因或添加日志
+                        showToast("通话结束: " + callEndReason.name());
+                        break;
+                }
             }
 
             @Override
             public void onCallError(@NonNull CallKitClient.CallErrorType callErrorType, int i, @Nullable String s) {
-
+                switch (callErrorType){
+                    case BUSINESS_ERROR:
+                        showToast("音视频异常");
+                    case RTC_ERROR:
+                        showToast("IM异常");
+                }
             }
 
             @Override
             public void onReceivedCall(@NonNull String s, @NonNull CallType callType, @Nullable JSONObject jsonObject) {
-
+                switch (callType){
+                    case SINGLE_VIDEO_CALL:showToast("收到视频通话");
+                    case SINGLE_VOICE_CALL:showToast("收到语音通话");
+                }
             }
 
             @Override
@@ -108,4 +148,11 @@ public class ChatApplication extends Application {
             }
         });
     }
+    public static void showToast(String message) {
+        // 使用 UI 线程确保安全
+        new Handler(Looper.getMainLooper()).post(() -> {
+            Toast.makeText(instance, message, Toast.LENGTH_SHORT).show();
+        });
+    }
+
 }
