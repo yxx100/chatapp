@@ -1,3 +1,5 @@
+import org.gradle.internal.impldep.bsh.commands.dir
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
@@ -33,7 +35,9 @@ android {
 }
 
 dependencies {
-
+    implementation(fileTree("libs") {
+        include("*.jar", "*.har")
+    })
     implementation(libs.appcompat)
     implementation(libs.material)
     implementation(libs.activity)
@@ -58,4 +62,7 @@ dependencies {
     implementation("org.jetbrains.kotlin:kotlin-stdlib:2.0.21")
     //callkit依赖
     implementation("io.hyphenate:chat-call-kit:4.16.0")
+    //Wavesidebar依赖
+    implementation("io.openharmony.tpc.thirdlib:WaveSideBar:1.0.3")
+    implementation("com.gjiazhe:wavesidebar:1.3")
 }

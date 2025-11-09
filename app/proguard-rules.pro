@@ -30,3 +30,4 @@
 
 -dontwarn io.reactivex.rxjava3.**
 -keep class io.reactivex.rxjava3.** {*;}
+-keep class com.gjiazhe.sidebar.** { *; }
