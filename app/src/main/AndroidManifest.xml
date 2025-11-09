@@ -75,6 +75,9 @@
         android:theme="@style/Theme.ChatAPP"
         android:usesCleartextTraffic="true">
         <activity
+            android:name=".Activity.VPFragmentBottomNavActivity"
+            android:exported="false" />
+        <activity
             android:name=".Activity.MainActivity2"
             android:exported="false" />
         <activity
