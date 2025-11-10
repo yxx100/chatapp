@@ -81,7 +81,7 @@ public class LoginActivity extends AppCompatActivity {
                                                     public void run() {
                                                         Toast.makeText(LoginActivity.this, "登录成功", Toast.LENGTH_SHORT).show();
                                                         ChatApplication.setUser(userme);
-                                                        startActivity(new Intent(LoginActivity.this, MainActivity.class));
+                                                        startActivity(new Intent(LoginActivity.this, VPFragmentBottomNavActivity.class));
                                                         finish();
                                                     }
                                                 });

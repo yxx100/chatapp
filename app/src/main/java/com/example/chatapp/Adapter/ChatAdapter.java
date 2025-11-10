@@ -76,6 +76,7 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ViewHolder>{
         holder.textView.setText(chat.getContent());
 
         APPUtil util=new APPUtil(context);
+        Log.d(TAG , chat.getSender().getUsername());
         if (chat.getSender().getUsername().contentEquals(me.getUsername())) {
             util.loadImage(holder.imageView, me.getAvatar());
         } else if (chat.getSender().getUsername().contentEquals(friendName)) {

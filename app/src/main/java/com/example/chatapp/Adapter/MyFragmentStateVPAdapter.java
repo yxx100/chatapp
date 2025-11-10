@@ -19,7 +19,7 @@ public class MyFragmentStateVPAdapter extends FragmentStatePagerAdapter {
     @NonNull
     @Override
     public Fragment getItem(int position) {
-        return mFragmentList ==null ? null :mFragmentList.get(position)
+        return mFragmentList ==null ? null :mFragmentList.get(position);
     }
 
     @Override

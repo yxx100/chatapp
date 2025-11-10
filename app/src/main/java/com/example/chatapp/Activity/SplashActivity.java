@@ -32,7 +32,7 @@ public class SplashActivity extends AppCompatActivity {
                 if (EMClient.getInstance().isLoggedInBefore()){
                     //跳转到已登陆
                     Log.d(TAG, "已登录跳转");
-                    startActivity(new Intent(SplashActivity.this,MainActivity.class));
+                    startActivity(new Intent(SplashActivity.this, VPFragmentBottomNavActivity.class));
                     finish();
                 }else {
                     //跳转到未登录
