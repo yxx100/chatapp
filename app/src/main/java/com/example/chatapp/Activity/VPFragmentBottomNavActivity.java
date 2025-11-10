@@ -66,7 +66,16 @@ public class VPFragmentBottomNavActivity extends AppCompatActivity {
         mBottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
-                return false;
+                if (menuItem.getItemId()==R.id.menu_home)
+                    mViewPager.setCurrentItem(0);
+                else if (menuItem.getItemId()==R.id.menu_connect)
+                    mViewPager.setCurrentItem(1);
+                else if (menuItem.getItemId()==R.id.menu_mine)
+                    mViewPager.setCurrentItem(2);
+
+
+
+                return true;
             }
         });
     }
