@@ -3,6 +3,7 @@ package com.example.chatapp.Activity;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
@@ -19,6 +20,7 @@ import com.example.chatapp.Fragment.ContactFragment;
 import com.example.chatapp.Fragment.MessageFragment;
 import com.example.chatapp.Fragment.MineFragment;
 import com.example.chatapp.R;
+import com.google.android.material.badge.BadgeDrawable;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import java.util.ArrayList;
@@ -30,6 +32,7 @@ public class VPFragmentBottomNavActivity extends AppCompatActivity {
     private BottomNavigationView mBottomNavigationView;
     private MyFragmentStateVPAdapter mStateVPAdapter;
     private List<Fragment> mFragmentList;
+    private TextView mTextView;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -37,7 +40,7 @@ public class VPFragmentBottomNavActivity extends AppCompatActivity {
         setContentView(R.layout.activity_vpfragment_botoom_nav);
         mViewPager= findViewById(R.id.vp);
         mBottomNavigationView=findViewById(R.id.bottom_menu);
-
+        mTextView=findViewById(R.id.text_main);
         initData();
         mStateVPAdapter =new MyFragmentStateVPAdapter(getSupportFragmentManager(),mFragmentList);
 
@@ -67,17 +70,21 @@ public class VPFragmentBottomNavActivity extends AppCompatActivity {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
                 if (menuItem.getItemId()==R.id.menu_home)
-                    mViewPager.setCurrentItem(0);
+                {  mViewPager.setCurrentItem(0);
+                mTextView.setText("消息");}
                 else if (menuItem.getItemId()==R.id.menu_connect)
-                    mViewPager.setCurrentItem(1);
+                { mViewPager.setCurrentItem(1);mTextView.setText("联系人");}
                 else if (menuItem.getItemId()==R.id.menu_mine)
-                    mViewPager.setCurrentItem(2);
+                {mViewPager.setCurrentItem(2);mTextView.setText("我的");}
 
 
 
                 return true;
             }
         });
+
+
+
     }
 
 
@@ -90,6 +97,7 @@ public class VPFragmentBottomNavActivity extends AppCompatActivity {
                 mBottomNavigationView.setSelectedItemId(R.id.menu_connect);
                 break;
             case 2:
+                mBottomNavigationView.removeBadge(R.id.menu_home);
                 mBottomNavigationView.setSelectedItemId(R.id.menu_mine);
                 break;
             default:

@@ -1,14 +1,37 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
+    android:orientation="vertical"
     android:layout_height="match_parent"
     tools:context=".Fragment.MineFragment">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="@string/hello_blank_fragment" />
 
-</FrameLayout>
+    <ImageView
+        android:id="@+id/iv_touxiang"
+        android:layout_width="150dp"
+        android:layout_height="150dp"
+        android:src="@color/black"
+        android:layout_gravity="center"
+        android:layout_margin="30dp"
+        />
+    <TextView
+        android:id="@+id/tv_yonghu"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="用户名"
+        android:gravity="center"
+        android:textSize="30dp"
+        />
+    <Button
+        android:id="@+id/buttonlogout"
+        android:text="退出登录"
+        android:textSize="30dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="5dp"
+        android:layout_marginTop="200dp"/>
+
+
+
+</LinearLayout>
