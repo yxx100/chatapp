@@ -190,6 +190,13 @@ public class ContactFragment extends Fragment {
         return view;
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        initview();
+        setEvent();
+    }
+
     private void setEvent() {
         linearLayout.setOnClickListener(new View.OnClickListener() {
             @Override

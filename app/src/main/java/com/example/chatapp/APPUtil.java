@@ -17,10 +17,18 @@ public class APPUtil {
         RequestOptions options = new RequestOptions().bitmapTransform(new RoundedCorners(20));
         if (avatar.contentEquals("123")) {
             Glide.with(context)
-                    .load(R.drawable.default_avatar)
+                    .load(R.drawable.touxiang)
                     .apply(options)
                     .into(imageView);
-        } else {
+        }
+        else if (avatar.contentEquals("friend")){
+            Glide.with(context)
+                    .load(R.drawable.touxing1)
+                    .apply(options)
+                    .into(imageView);
+        }
+
+        else {
             Glide.with(context)
                     .load(avatar)
                     .placeholder(R.drawable.default_avatar)

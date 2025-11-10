@@ -1,7 +1,9 @@
 package com.example.chatapp.Fragment;
 
+import android.content.Intent;
 import android.os.Bundle;
 
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
@@ -14,6 +16,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.chatapp.APPUtil;
+import com.example.chatapp.Activity.LoginActivity;
 import com.example.chatapp.Bean.User;
 import com.example.chatapp.ChatApplication;
 import com.example.chatapp.R;
@@ -79,7 +82,11 @@ public class MineFragment extends Fragment {
             public void onClick(View view) {
                 EMClient.getInstance().logout(true);
                 User user= ChatApplication.getUser();
+
                 com.example.chatapp.Bean.User.logOut();
+                getActivity().finish();
+                startActivity(new Intent(getContext(), LoginActivity.class));
+
             }
         });
     }
